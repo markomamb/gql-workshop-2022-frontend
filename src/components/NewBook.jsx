@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, ALL_BOOKS } from '../graphql'
+import { useApplicationContext } from '../ApplicationContext'
 
 const NewBook = (props) => {
+  const { token, setPage } = useApplicationContext()
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -10,8 +12,15 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [ALL_BOOKS]
+    refetchQueries: [ALL_BOOKS],
+    onCompleted: (response) => console.log(response)
   })
+
+  useEffect(() => {
+    if (!token) {
+      setPage('login')
+    }
+  }, [token])
 
   if (!props.show) {
     return null
@@ -21,7 +30,9 @@ const NewBook = (props) => {
     event.preventDefault()
     const publishedInt = parseInt(published)
     await addBook({
-      variables: { title, published: publishedInt, author, genres }
+      variables: {
+        input: { title, published: publishedInt, author, genres }
+      }
     })
 
     setTitle('')
