@@ -5,7 +5,7 @@ export const ApplicationContext = createContext(undefined)
 
 export const ApplicationContextProvider = ({ children }): JSX.Element => {
   const [page, setPage] = useState('authors')
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState(localStorage.getItem('books-user-token'))
   const [error, setError] = useState(null)
 
   const values = {
